@@ -1,4 +1,4 @@
-#!/usr/local/bin/scsh-0.6.7 \
+#!/usr/local/bin/scsh \
 -o defrec-package -e main -s
 !#
 
