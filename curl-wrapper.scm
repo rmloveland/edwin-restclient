@@ -58,6 +58,3 @@
                                   (third input)    ; path+params
                                   (fourth input)))); payload
           (display (curl-wrapper r))))))
-
-       
-
