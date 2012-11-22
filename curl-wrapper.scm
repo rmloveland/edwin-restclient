@@ -34,13 +34,13 @@
 ;;; `api-request', which is defined above.
 ;;; The request protocol understood by this script is an s-expression
 ;;; (a string coming from stdin, actually) of the form
-;;; '(HTTP-VERB API-URL PATH+PARAMS PAYLOAD)."
+;;; '(HTTP-VERB API-URL PATH+PARAMS PAYLOAD).
 
 (define (curl-wrapper r)
   "Returns the name of a temporary filename storing the request results."
   (if (api-request? r)
       (with-cwd preferred-working-directory
-          (run/file
+          (run/string
            (curl -b ,cookie-file -c ,cookie-file -X ,(api-request:http-verb r)
                  ,(string-append (api-request:base-url r)
                                   (api-request:path+params r))
@@ -57,8 +57,7 @@
                                   (second input)   ; url
                                   (third input)    ; path+params
                                   (fourth input)))); payload
-          (display (curl-wrapper r))
-          (newline)))))
+          (display (curl-wrapper r))))))
 
        
 
