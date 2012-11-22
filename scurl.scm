@@ -41,7 +41,8 @@
   (if (api-request? r)
       (with-cwd preferred-working-directory
           (run/string
-           (curl -b ,cookie-file -c ,cookie-file -X ,(api-request:http-verb r)
+           (curl --silent --show-error
+            -b ,cookie-file -c ,cookie-file -X ,(api-request:http-verb r)
                  ,(string-append (api-request:base-url r)
                                   (api-request:path+params r))
                  -d ,(api-request:payload r))))
