@@ -1,5 +1,19 @@
 # A REST client workflow for Edwin
 
+## Overview
+
+This project aims to integrate a REST client into the Edwin editor. Right now the basic workflow is as follows:
+
+1. Navigate to a buffer containing JSON (or other) text you'd like to send in a request
+
+2. Select all text in the region
+
+3. Call the combination of shell and Edwin commands that properly escape that text and send it to the API as defined by `restclient.scm`.
+
+So far it has three moving parts: `scurl`, a simplified curl wrapper written in Scsh, `json-escape.scm`, which escapes JSON strings into a format suitable to feed to `scurl`, and `restclient.scm`, some MIT Scheme code that runs in Edwin and tries to glue it all together.
+
+Read on for the ugly details.
+
 ## Scurl, a curl wrapper
 
 `Scurl.scm` is a highly simplified Scsh wrapper for [curl(1)](http://curl.haxx.se/docs/manpage.html). You generate s-expressions of the form
@@ -31,10 +45,16 @@ Why another simplified `curl` wrapper? This was written to aid integrating a key
 
 The included `scsh` script `json-escape.scm` is used to add the necessary escape characters to JSON strings before sending them to `scurl`. If you're using other data formats, you'll need to use the right tool to ensure that those strings are being escaped properly as well (XML, for example).
 
-### Finally, Edwin integration
+### Where's the Edwin integration?
 
-These tools are used in Edwin like so: You navigate to a JSON file you want to send to the server. Issue the Edwin command `mark-whole-buffer` to mark the entire file as the current region, and then call Edwin's `shell-command-on-region` with the script `json-escape.scm` (using a handy shell alias like `json-esc`). A temporary buffer pops up with the JSON modified to include the necessary escape characters.
+These tools are used in Edwin like so:
 
-Now you're sitting in a temporary Edwin buffer full of the right data and it's ready to send to the API server. This is where Edwin, and the file `restclient.scm`, come in. Once again, you need to mark the region you want to send to the API, and then call the interactive Edwin command `api-send-region` (defined in `restclient.scm`). It asks what _PATH+PARAMS_ you'd like to add to the _BASE-URL_, as well as what _HTTP-VERB_ you'd like to use (`PUT`, `POST`, etc.). It uses `scurl` to make the API call, and pops up a new buffer with the output of the call.
+1. Navigate to a JSON file you want to send to the server.
+
+2. Issue the Edwin command `mark-whole-buffer` to mark the entire file as the current region, and then call Edwin's `shell-command-on-region` with the script `json-escape.scm` (using a handy shell alias like `json-esc`). A temporary buffer named `"*REST client output"` pops up with the JSON modified to include the necessary escape characters. Change to that buffer. Now you're sitting in a temporary Edwin buffer, with data ready to send to the API server. (This is where Edwin, and the file `restclient.scm`, come in.)
+
+4. Once again, you need to mark the region you want to send to the API, and call the interactive Edwin command `api-send-region`. It asks what _PATH+PARAMS_ you'd like to add to the _BASE-URL_, as well as what _HTTP-VERB_ you'd like to use (`PUT`, `POST`, etc.). It uses `scurl` to make the API call, and pops up a new buffer with the output of the call.
+
+It's much more laborious to describe the steps involved than it is to actually perform them. Especially if you're an experienced Emacs/Edwin user.
 
 This is a work in progress. Currently, it's targeted at the APIs I use most in my daily work at AppNexus. However, much of the code is very general, and I'd like it to evolve into a general HTTP client interface for Edwin.
