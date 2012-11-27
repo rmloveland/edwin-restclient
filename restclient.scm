@@ -39,7 +39,7 @@
    payload))
 
 (define-command api-send-region
-  "Make an HTTP call to the API, sending the contents of the current buffer."
+  "Send the contents of the current region to the API endpoint."
   (lambda ()
     (list
      (restclient-command-prompt "http verb: ")
