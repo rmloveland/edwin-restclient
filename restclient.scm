@@ -46,7 +46,7 @@
      (restclient-command-prompt "path+params: ")
      (current-region)))
   (lambda (http-verb path+params region)
-    (let ((payload (region->string region)))  ;; WORKING VERSION, DON'T CHANGE
+    (let ((payload (region->string region)))
          (api-send http-verb
                    (string-append "/" path+params)
                    payload))))
