@@ -54,6 +54,17 @@
   (lambda (http-verb path+params region)
     (api-send-region http-verb path+params region)))
 
+(define-command api-send-buffer
+  "Send the contents of the current region to the API endpoint."
+  (lambda ()
+    (list
+     (restclient-command-prompt "http verb: ")
+     (restclient-command-prompt "path+params: ")
+     (current-region)))
+  (lambda (http-verb path+params region)
+    (ref-command mark-whole-buffer)
+    (api-send-region http-verb path+params region)))
+
 (define-command simplified-shell-command
   "Execute string COMMAND in inferior shell; display output, if any.
 Optional second arg true (prefix arg, if interactive) means
