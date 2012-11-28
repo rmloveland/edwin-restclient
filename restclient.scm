@@ -38,6 +38,12 @@
    path+params
    payload))
 
+(define (api-send-region http-verb path+params region)
+  (let ((payload (region->string region)))
+    (api-send http-verb
+              (string-append "/" path+params)
+              payload)))
+
 (define-command api-send-region
   "Send the contents of the current region to the API endpoint."
   (lambda ()
@@ -46,10 +52,7 @@
      (restclient-command-prompt "path+params: ")
      (current-region)))
   (lambda (http-verb path+params region)
-    (let ((payload (region->string region)))
-         (api-send http-verb
-                   (string-append "/" path+params)
-                   payload))))
+    (api-send-region http-verb path+params region)))
 
 (define-command simplified-shell-command
   "Execute string COMMAND in inferior shell; display output, if any.
