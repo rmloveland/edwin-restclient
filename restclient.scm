@@ -55,7 +55,7 @@ USA.
   (api-request
    "GET"
    path+params
-   ""))
+   "*")) ;; Quick hack to avoid a Scurl error.
 
 (define (api-send http-verb path+params payload)
   (api-request
@@ -78,6 +78,14 @@ USA.
      (current-region)))
   (lambda (http-verb path+params region)
     (api-send-region http-verb path+params region)))
+
+(define-command api-get
+  "Make a GET request to the API endpoint at PATH+PARAMS."
+  (lambda ()
+    (list
+     (restclient-command-prompt "path+params: ")))
+  (lambda (path+params)
+    (api-get path+params)))
 
 (define-command simplified-shell-command
   "Execute string COMMAND in inferior shell; display output, if any.
@@ -105,3 +113,8 @@ insert output in current buffer after point (leave mark after it)."
       (if (mark< start (buffer-end buffer))
 	  (pop-up-buffer buffer #f)
 	  (message "(Command completed with no output)")))))
+
+;;;; Keybindings
+
+(define-key 'fundamental '(#\C-c #\C-p) 'api-send-region)
+(define-key 'fundamental '(#\C-c #\C-g) 'api-get)
