@@ -87,6 +87,23 @@ USA.
   (lambda (path+params)
     (api-get path+params)))
 
+(define-command api-toggle-endpoint
+  "Toggle the current API endpoint."
+  (lambda () ())
+  (lambda ()
+    (cond ((string=? current-api-url (cdr (assoc 'console-prod api-urls)))
+           (set! current-api-url (cdr (assoc 'console-sand api-urls))))
+          ((string=? current-api-url (cdr (assoc 'console-sand api-urls)))
+           (set! current-api-url (cdr (assoc 'console-prod api-urls))))
+          (else (begin (set! current-api-url (cdr (assoc 'console-sand api-urls)))
+                       (message "Setting the current API URL to http://sand.api.appnexus.com"))))))
+
+(define-command api-display-current-url
+  "Display the current API endpoint."
+  (lambda () ())
+  (lambda ()
+    (message (string-append "Current API endpoint is " current-api-url))))
+
 (define-command simplified-shell-command
   "Execute string COMMAND in inferior shell; display output, if any.
 Optional second arg true (prefix arg, if interactive) means
