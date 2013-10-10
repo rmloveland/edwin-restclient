@@ -46,7 +46,7 @@ USA.
     ((ref-command simplified-shell-command) command)))
 
 (define (an-auth)
-  (an-request
+  (api-request
    "POST"
    "/auth"
    "@auth"))
@@ -54,13 +54,13 @@ USA.
 (define (api-get path+params)
   (api-request
    "GET"
-   path+params
+   (string-append "/" path+params)
    "*")) ;; Quick hack to avoid a Scurl error.
 
 (define (api-send http-verb path+params payload)
   (api-request
    http-verb
-   path+params
+   (string-append "/" path+params)
    payload))
 
 (define (api-send-region http-verb path+params region)
@@ -86,6 +86,12 @@ USA.
      (restclient-command-prompt "path+params: ")))
   (lambda (path+params)
     (api-get path+params)))
+
+(define-command api-auth
+  "Authenticate with the current API endpoint."
+  ()
+  (lambda ()
+    (an-auth)))
 
 (define-command api-toggle-endpoint
   "Toggle the current API endpoint."
@@ -114,6 +120,7 @@ insert output in current buffer after point (leave mark after it)."
   (lambda (command)
     (let ((directory (buffer-default-directory (current-buffer))))
       (shell-command-pop-up-output
+       command
        (lambda (output-mark)
          (shell-command #f output-mark directory #f command))))))
 
@@ -122,8 +129,9 @@ insert output in current buffer after point (leave mark after it)."
 		     'DEFAULT-TYPE 'INSERTED-DEFAULT
 		     'HISTORY 'SHELL-COMMAND))
 
-(define (shell-command-pop-up-output generate-output)
-  (let ((buffer (temporary-buffer "*REST client output*")))
+(define (shell-command-pop-up-output command generate-output)
+  (let ((buffer (temporary-buffer
+                 (string-append "* REST client: " command " *"))))
     (let ((start (buffer-start buffer)))
       (generate-output start)
       (set-buffer-point! buffer start)
